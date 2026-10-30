@@ -8,6 +8,10 @@ An end-to-end public reference project with Kafka ingestion, SVM and neural-netw
 
 All data is **synthetic**. The project is an original demonstration of engineering methods, contains no private source code or operational records, and makes no claim of production deployment or real equipment reliability gains.
 
+![Live Docker dashboard](docs/images/dashboard-desktop.png)
+
+[Mobile viewport screenshot](docs/images/dashboard-mobile.png). Both screenshots were captured by the live-service browser tests.
+
 ## Start the local demo
 
 Python 3.12 is tested. No GPU, external credentials or paid service is needed.
@@ -108,7 +112,7 @@ The consumer is long-running; the producer sends a finite replay. Start the cons
 
 ## MLflow tracking
 
-`runtime/mlflow.db` contains two tracked model runs. Each includes seed, horizon, threshold, validation/test metrics and the metrics report. The selected model bundle is logged as a trusted local artifact. This project uses `mlflow-skinny` and its SQLite backend dependencies; it does not bundle an MLflow UI server.
+`runtime/mlflow.db` contains two tracked model runs. Each includes seed, horizon, threshold, validation/test metrics and the metrics report. The selected model bundle is logged as a trusted local artifact. New experiments keep artifacts under the persistent output directory (`runtime/mlartifacts` by default); existing experiments retain their configured artifact location. This project uses `mlflow-skinny` and its SQLite backend dependencies; it does not bundle an MLflow UI server.
 
 ```python
 from mlflow import MlflowClient
@@ -128,7 +132,7 @@ node --check static/app.js      # optional JavaScript syntax check; Node is not 
 RUN_KAFKA_TEST=1 python -m pytest -q tests/test_pipeline.py -k real_kafka
 ```
 
-See [validation evidence](docs/validation.md) for checks actually performed and remaining verification. The [GitHub Actions validation run](https://github.com/zohaibjan/predictive-maintenance-lab/actions/runs/41017185745) passed Python tests, training, replay, Docker-based Kafka/topic startup and real Kafka transport integration. Full application-container and browser checks remain separate.
+See [validation evidence](docs/validation.md) for checks actually performed and remaining verification. The [GitHub Actions validation run](https://github.com/zohaibjan/predictive-maintenance-lab/actions/runs/41017185745) passed Python tests, training, replay, Docker-based Kafka/topic startup and real Kafka transport integration. The [extended validation run](https://github.com/zohaibjan/predictive-maintenance-lab/actions/runs/41019549256) also passed the complete application-container stack and five browser configurations: Chromium, Firefox and WebKit desktop, plus Chromium and WebKit mobile viewports.
 
 The browser interface uses plain JavaScript and CSS with no frontend build step. Font loading is optional; local system fonts provide a fallback. Node is only used for the optional syntax check.
 

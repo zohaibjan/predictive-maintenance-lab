@@ -1,23 +1,20 @@
 # Validation evidence
 
-## Completed locally
+The [extended GitHub Actions run](https://github.com/zohaibjan/predictive-maintenance-lab/actions/runs/41019549256) passed both jobs on the tested code revision.
 
-- Nine Python tests passed in one complete run with a real Apache Kafka 4.0.2 broker. Runtime: 15.49 seconds.
-- Actual SVM and neural-network fitting, separate-asset calibration, validation threshold/model selection and held-out metrics were executed.
-- MLflow SQLite tracking was exercised and both runs' recorded metrics retrieved with MlflowClient.
-- Batch/stream feature parity, idempotent duplicates, conflicting IDs, late events, persistence, input validation and quarantine were tested.
-- Kafka message handling was tested for commit-after-ingestion/quarantine and no commit after a storage failure.
-- FastAPI endpoints, dashboard/static delivery, prediction ingestion and validation responses were tested with TestClient.
-- Independent offline replay scored 800 readings across 12 synthetic assets.
-- `node --check static/app.js` passed.
+## Completed checks
 
-## Remaining checks
+- Nine core tests across the unit/API suite and real Kafka integration.
+- Complete Docker application build and execution: training container, Kafka broker, topic initializer, API, consumer and producer.
+- All 800 producer readings scored and persisted across 12 independent synthetic assets; API history, risk bounds and zero quarantine records checked.
+- MLflow metrics recorded and the logged selected-model artifact retained after the training container was removed. New experiments use the persistent output volume.
+- Five live-service browser configurations passed: Chromium/Firefox/WebKit at 1440×1000, and Chromium/WebKit at 390×844 (mobile emulation, not physical phones).
+- Browser checks cover search, empty search results, asset selection, chart presence, status filtering, model/pipeline navigation, refresh, no page-script errors and no whole-page horizontal overflow.
+- [Desktop screenshot](images/dashboard-desktop.png) and [mobile screenshot](images/dashboard-mobile.png) were captured from the live container service. Full screenshots, JUnit XML and container logs are also available in the run's full-stack-browser-evidence artifact.
+- Earlier batch/stream feature parity, asset-disjoint modelling, frozen-estimator calibration, duplicate/conflict/late-event handling, commit-after-durable-storage and storage-failure retry checks remain in the core suite.
 
-The managed browser-preview service lacks the Python interpreter required by the FastAPI application. Browser visual/responsive/interaction QA was therefore not completed. The API test client is not a substitute for those checks.
+## Limits
 
-The [GitHub Actions validation run](https://github.com/zohaibjan/predictive-maintenance-lab/actions/runs/41017185745) passed Docker Compose startup of the Kafka broker/topic initializer and the real Kafka integration test. The complete application-container stack (train/API/producer/consumer images together) has not been exercised. The real Kafka transport test passed using an official Apache Kafka 4.0.2 binary distribution and Java 17. The distribution SHA-512 checksum was verified before execution. Broker, topic creation, producer and scoring consumer ran in one test process tree; an event was durably scored through the actual Kafka transport. This verifies transport, not Docker orchestration.
+These checks validate a bounded synthetic demonstration. No real equipment data, failure-reduction benefit or production readiness is established. Mobile coverage is viewport/touch emulation, not physical device testing; the suite does not cover every browser version, accessibility requirement, load level or network failure. Range flags are basic diagnostics rather than a complete drift detector. Retraining and promotion remain manual.
 
-No hardware, real sensor data, real maintenance records or operational savings have been validated. CI evidence is linked above; it covers the published code and its Docker-based broker integration.
-
-
-The recorded run emitted two third-party deprecation warnings from Starlette/httpx and SQLAlchemy/MLflow. No test failures remained.
+The managed interactive preview uses recorded scored replay data because its host lacks Python. The automated browser checks above instead used the actual live FastAPI application connected to Kafka in Docker.
