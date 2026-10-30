@@ -45,7 +45,7 @@ def test_live_dashboard(engine,width,height):
             pw.expect(page.locator('#model-results tbody tr')).to_have_count(2)
             page.get_by_role('button',name='Data pipeline').click()
             pw.expect(page.get_by_role('heading',name='From sensor reading to review',exact=True)).to_be_visible()
-            page.get_by_role('button',name='Fleet overview 12').click()
+            page.get_by_role('button',name='Fleet overview').click()
             page.get_by_role('button',name='Refresh',exact=False).click()
             pw.expect(page.locator('#error')).to_be_hidden()
             pw.expect(page.locator('#asset-count')).to_have_text('12')
