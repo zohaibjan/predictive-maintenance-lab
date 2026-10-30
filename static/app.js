@@ -1,0 +1,30 @@
+'use strict';
+const $=id=>document.getElementById(id), esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let state=null, metrics=null, selected=null, busy=false;
+const pct=x=>(x*100).toFixed(1)+'%', statusName=s=>({critical:'Priority',watch:'Watch',normal:'Normal'}[s]||s);
+async function get(url){const r=await fetch(url);if(!r.ok)throw Error('Local service returned '+r.status+'. Train the model and replay sensor events first.');return r.json();}
+function renderFleet(){
+ if(!state)return;
+ const query=$('search').value.toLowerCase(),filter=$('status').value;
+ const rows=state.assets.filter(a=>a.asset_id.toLowerCase().includes(query)&&(filter==='all'||a.status===filter));
+ $('assets').innerHTML=rows.map(a=>`<tr tabindex="0" role="button" aria-label="Inspect ${esc(a.asset_id)}" class="asset-row ${a.asset_id===selected?'selected':''}" data-asset="${esc(a.asset_id)}"><td><span class="asset-name">${esc(a.asset_id.toUpperCase())}</span><span class="asset-type">Simulated pump · sensor group</span></td><td><span class="badge ${esc(a.status)}">${statusName(a.status)}</span></td><td><div class="risk-cell"><div class="risk-track"><div class="risk-fill ${esc(a.status)}" style="width:${Math.min(100,Math.max(0,a.risk*100))}%"></div></div>${pct(a.risk)}</div></td><td>${a.vibration.toFixed(2)} <span class="asset-type">illustrative units</span></td></tr>`).join('')||'<tr><td colspan="4">No matching assets.</td></tr>';
+ document.querySelectorAll('[data-asset]').forEach(row=>{const pick=()=>selectAsset(row.dataset.asset);row.onclick=pick;row.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pick();}};});
+}
+async function selectAsset(id){
+ selected=id;renderFleet();const a=state.assets.find(a=>a.asset_id===id);if(!a)return;
+ $('selected-asset').textContent=id.toUpperCase();$('selected-status').innerHTML=`<span class="badge ${esc(a.status)}">${statusName(a.status)}</span>`;
+ $('selected-risk').textContent=pct(a.risk);$('temperature').textContent=a.temperature.toFixed(1)+' °C';$('pressure').textContent=a.pressure.toFixed(1)+' bar';$('supplier').textContent=pct(a.supplier_fault_rate);$('range').textContent=a.out_of_range_features+' / 9 features';
+ try{const history=await get('/api/assets/'+encodeURIComponent(id)+'/history');if(selected!==id)return;const data=history.slice(-24),n=Math.max(data.length-1,1);const pts=data.map((p,i)=>`${20+i*320/n},${115-p.risk*90}`);const thresholdY=115-state.threshold*90;
+ $('risk-chart').innerHTML=`<defs><linearGradient id="fill" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f2b37b" stop-opacity=".22"/><stop offset="1" stop-color="#f2b37b" stop-opacity="0"/></linearGradient></defs><path d="M20 25H340 M20 70H340 M20 115H340" stroke="#2d3741" fill="none"/><path d="M20 ${thresholdY}H340" stroke="#aa8c6c" stroke-dasharray="4 5"/><polygon points="20,115 ${pts.join(' ')} 340,115" fill="url(#fill)"/><polyline points="${pts.join(' ')}" fill="none" stroke="#f2b37b" stroke-width="2.5" stroke-linejoin="round"/><text x="20" y="136" fill="#6f8090" font-size="8">24 readings ago</text><text x="320" y="136" fill="#6f8090" font-size="8">Latest</text>`;
+ }catch(e){$('error').hidden=false;$('error').textContent=e.message;}
+}
+function renderMetrics(){
+ if(!metrics)return;
+ const winner=metrics.selected_by_validation_f1;
+ $('test-f1').textContent=metrics.models[winner].test.f1.toFixed(3);
+ $('model-results').innerHTML=`<table><thead><tr><th>MODEL</th><th>VAL F1</th><th>TEST F1</th><th>PRECISION</th><th>RECALL</th><th>ROC-AUC</th></tr></thead><tbody>${Object.entries(metrics.models).map(([name,m])=>`<tr><td>${name==='svm'?'Support vector machine':'Neural network'} ${name===winner?'<span class="badge normal">Selected</span>':''}</td><td>${m.validation.f1.toFixed(3)}</td><td>${m.test.f1.toFixed(3)}</td><td>${m.test.precision.toFixed(3)}</td><td>${m.test.recall.toFixed(3)}</td><td>${m.test.roc_auc.toFixed(3)}</td></tr>`).join('')}</tbody></table><p>These measurements describe a synthetic benchmark. They do not establish accuracy, failure reduction or downtime savings on real equipment.</p>`;
+}
+async function refresh(){if(busy)return;busy=true;$('refresh').disabled=true;try{[state,metrics]=await Promise.all([get('/api/assets'),get('/api/metrics')]);$('error').hidden=true;$('asset-count').textContent=state.assets.length;$('critical-count').textContent=state.assets.filter(a=>a.status==='critical').length;$('event-count').textContent=state.events_processed.toLocaleString();$('model-version').textContent=state.version;document.querySelector('.nav small').textContent=state.assets.length;$('updated').textContent='Updated '+new Date().toLocaleTimeString();renderMetrics();renderFleet();if(state.assets.length)await selectAsset(selected&&state.assets.some(a=>a.asset_id===selected)?selected:state.assets[0].asset_id);else $('assets').innerHTML='<tr><td colspan="4">No readings yet. Run the replay or Kafka producer.</td></tr>';}catch(e){$('error').hidden=false;$('error').textContent=e.message;$('updated').textContent='Service unavailable';}finally{busy=false;$('refresh').disabled=false;}}
+const titles={fleet:['Fleet overview','See the signal.<br><span>Stay ahead of failure.</span>','A clearer view of equipment health, powered by sensor data.'],models:['Model evaluation','Measure what matters.<br><span>Evaluate on unseen assets.</span>','A transparent comparison of models, thresholds and held-out results.'],pipeline:['Data pipeline','From raw readings<br><span>to actionable signals.</span>','One shared scoring path for streaming and offline evaluation.']};
+document.querySelectorAll('[data-view]').forEach(button=>button.onclick=()=>{const v=button.dataset.view;for(const key of Object.keys(titles))$(key+'-view').hidden=key!==v;document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b===button));$('view-label').textContent=titles[v][0];$('page-title').innerHTML=titles[v][1];$('page-description').textContent=titles[v][2];});
+$('search').oninput=renderFleet;$('status').onchange=renderFleet;$('refresh').onclick=refresh;refresh();setInterval(refresh,15000);

@@ -1,0 +1,48 @@
+name: Predictive maintenance checks
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: pip install -r requirements.txt
+      - run: node --check static/app.js
+      - run: python -m pytest -q
+      - run: python -m maintenance.train --tracking-uri sqlite:///runtime/mlflow.db
+      - run: python -m maintenance.replay
+      - name: Start real Kafka broker
+        run: docker compose up -d kafka init-topic
+      - name: Wait for topic initialisation
+        run: |
+          for attempt in $(seq 1 36); do
+            if docker compose logs init-topic | grep -q 'Created topic\|already exists'; then exit 0; fi
+            sleep 5
+          done
+          docker compose logs kafka init-topic
+          exit 1
+      - name: Kafka transport integration
+        env:
+          RUN_KAFKA_TEST: '1'
+        run: python -m pytest -q tests/test_pipeline.py -k real_kafka
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: maintenance-evaluation
+          path: |
+            runtime/metrics.json
+            runtime/model.joblib
+      - if: always()
+        run: docker compose down -v

@@ -1,0 +1,244 @@
+{
+  "seed": 42,
+  "sklearn": "1.8.0",
+  "synthetic": true,
+  "target": "failure within the next 12 simulated hours",
+  "features": [
+    "temperature",
+    "vibration",
+    "pressure",
+    "load",
+    "supplier_fault_rate",
+    "temperature_mean_6h",
+    "vibration_mean_6h",
+    "vibration_trend_6h",
+    "pressure_delta_6h"
+  ],
+  "splits": {
+    "train": {
+      "assets": [
+        "asset-000",
+        "asset-002",
+        "asset-003",
+        "asset-004",
+        "asset-007",
+        "asset-010",
+        "asset-017",
+        "asset-018",
+        "asset-020",
+        "asset-021",
+        "asset-024",
+        "asset-025",
+        "asset-026",
+        "asset-027",
+        "asset-028",
+        "asset-029",
+        "asset-033",
+        "asset-037",
+        "asset-038",
+        "asset-039",
+        "asset-040",
+        "asset-045",
+        "asset-046",
+        "asset-050",
+        "asset-051",
+        "asset-052",
+        "asset-055",
+        "asset-056",
+        "asset-059",
+        "asset-063",
+        "asset-069",
+        "asset-070",
+        "asset-071",
+        "asset-073",
+        "asset-075",
+        "asset-076",
+        "asset-078",
+        "asset-080",
+        "asset-081",
+        "asset-082",
+        "asset-083",
+        "asset-084",
+        "asset-088",
+        "asset-089",
+        "asset-092",
+        "asset-093",
+        "asset-094",
+        "asset-095",
+        "asset-098",
+        "asset-099",
+        "asset-102",
+        "asset-104",
+        "asset-105",
+        "asset-109",
+        "asset-110",
+        "asset-111",
+        "asset-113",
+        "asset-114",
+        "asset-117",
+        "asset-119"
+      ],
+      "rows": 3878,
+      "positive_rate": 0.10056730273336771
+    },
+    "calibration": {
+      "assets": [
+        "asset-001",
+        "asset-005",
+        "asset-023",
+        "asset-032",
+        "asset-042",
+        "asset-043",
+        "asset-057",
+        "asset-061",
+        "asset-068",
+        "asset-072",
+        "asset-079",
+        "asset-085",
+        "asset-086",
+        "asset-087",
+        "asset-091",
+        "asset-096",
+        "asset-101",
+        "asset-112",
+        "asset-115",
+        "asset-116"
+      ],
+      "rows": 1341,
+      "positive_rate": 0.08053691275167785
+    },
+    "validation": {
+      "assets": [
+        "asset-006",
+        "asset-009",
+        "asset-015",
+        "asset-016",
+        "asset-030",
+        "asset-031",
+        "asset-034",
+        "asset-044",
+        "asset-048",
+        "asset-049",
+        "asset-054",
+        "asset-058",
+        "asset-060",
+        "asset-062",
+        "asset-067",
+        "asset-074",
+        "asset-090",
+        "asset-100",
+        "asset-106",
+        "asset-118"
+      ],
+      "rows": 1384,
+      "positive_rate": 0.07586705202312138
+    },
+    "test": {
+      "assets": [
+        "asset-008",
+        "asset-011",
+        "asset-012",
+        "asset-013",
+        "asset-014",
+        "asset-019",
+        "asset-022",
+        "asset-035",
+        "asset-036",
+        "asset-041",
+        "asset-047",
+        "asset-053",
+        "asset-064",
+        "asset-065",
+        "asset-066",
+        "asset-077",
+        "asset-097",
+        "asset-103",
+        "asset-107",
+        "asset-108"
+      ],
+      "rows": 1321,
+      "positive_rate": 0.10446631339894019
+    }
+  },
+  "models": {
+    "svm": {
+      "threshold": 0.40000000000000013,
+      "validation": {
+        "f1": 0.912621359223301,
+        "precision": 0.9306930693069307,
+        "recall": 0.8952380952380953,
+        "roc_auc": 0.9976990952753267,
+        "average_precision": 0.9726049738518967,
+        "brier_score": 0.010559738112129626,
+        "confusion_matrix": [
+          [
+            1272,
+            7
+          ],
+          [
+            11,
+            94
+          ]
+        ]
+      },
+      "test": {
+        "f1": 0.9496402877697842,
+        "precision": 0.9428571428571428,
+        "recall": 0.9565217391304348,
+        "roc_auc": 0.9976845896578339,
+        "average_precision": 0.9812955887999343,
+        "brier_score": 0.009812160299887344,
+        "confusion_matrix": [
+          [
+            1175,
+            8
+          ],
+          [
+            6,
+            132
+          ]
+        ]
+      }
+    },
+    "neural_network": {
+      "threshold": 0.1,
+      "validation": {
+        "f1": 0.9383886255924171,
+        "precision": 0.9339622641509434,
+        "recall": 0.9428571428571428,
+        "roc_auc": 0.9979522692579769,
+        "average_precision": 0.981750842156575,
+        "brier_score": 0.00876243708348159,
+        "confusion_matrix": [
+          [
+            1272,
+            7
+          ],
+          [
+            6,
+            99
+          ]
+        ]
+      },
+      "test": {
+        "f1": 0.9309090909090909,
+        "precision": 0.9343065693430657,
+        "recall": 0.927536231884058,
+        "roc_auc": 0.9981868744410551,
+        "average_precision": 0.9850901089386437,
+        "brier_score": 0.013350559838726968,
+        "confusion_matrix": [
+          [
+            1174,
+            9
+          ],
+          [
+            10,
+            128
+          ]
+        ]
+      }
+    }
+  },
+  "selected_by_validation_f1": "neural_network"
+}

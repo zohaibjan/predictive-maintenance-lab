@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+.pytest_cache/
+runtime/
+*.joblib
+*.db
+*.db-shm
+*.db-wal
+.env
+mlartifacts/
+mlruns/
+.openai/local-python.txt
