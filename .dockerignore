@@ -3,3 +3,7 @@
 __pycache__
 runtime
 .pytest_cache
+mlruns
+mlartifacts
+.openai
+test-results

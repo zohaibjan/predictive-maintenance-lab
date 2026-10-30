@@ -10,3 +10,4 @@ runtime/
 mlartifacts/
 mlruns/
 .openai/local-python.txt
+test-results/
