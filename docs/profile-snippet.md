@@ -1,9 +1,9 @@
-# Proposed GitHub profile entry
+# GitHub profile entry
 
-Add this row to Selected work after publication:
+The project is featured in the Selected work table on [the GitHub profile](https://github.com/zohaibjan).
 
 | Project | What to explore |
 |---|---|
-| Predictive Maintenance Lab | Synthetic sensor ingestion with Kafka, causal rolling features, calibrated SVM/neural-network models, MLflow tracking and a FastAPI fleet-health dashboard |
+| [Predictive Maintenance Lab](https://github.com/zohaibjan/predictive-maintenance-lab) | Synthetic sensor ingestion with Kafka, causal rolling features, calibrated SVM/neural-network models, MLflow tracking and a FastAPI fleet-health dashboard |
 
-Use the actual repository URL after it exists. This project demonstrates methods; do not describe it as an employer deployment or claim its synthetic metrics as operational outcomes.
+The project demonstrates methods; its synthetic metrics are not operational outcomes.

@@ -1,5 +1,7 @@
 # Predictive Maintenance Lab
 
+[![Predictive maintenance checks](https://github.com/zohaibjan/predictive-maintenance-lab/actions/workflows/tests.yml/badge.svg)](https://github.com/zohaibjan/predictive-maintenance-lab/actions/workflows/tests.yml)
+
 **Sensor data → causal feature engineering → failure-risk prediction → human review.**
 
 An end-to-end public reference project with Kafka ingestion, SVM and neural-network classifiers, MLflow experiment tracking, a FastAPI scoring service and an interactive fleet-health dashboard.
@@ -126,7 +128,7 @@ node --check static/app.js      # optional JavaScript syntax check; Node is not 
 RUN_KAFKA_TEST=1 python -m pytest -q tests/test_pipeline.py -k real_kafka
 ```
 
-See [validation evidence](docs/validation.md) for checks actually performed and remaining verification. The GitHub Actions workflow is prepared to run Python tests, training, replay and a real Kafka integration test on a Docker-capable runner. It has not run until the repository is published.
+See [validation evidence](docs/validation.md) for checks actually performed and remaining verification. The [GitHub Actions validation run](https://github.com/zohaibjan/predictive-maintenance-lab/actions/runs/41017185745) passed Python tests, training, replay, Docker-based Kafka/topic startup and real Kafka transport integration. Full application-container and browser checks remain separate.
 
 The browser interface uses plain JavaScript and CSS with no frontend build step. Font loading is optional; local system fonts provide a fallback. Node is only used for the optional syntax check.
 

@@ -15,9 +15,9 @@
 
 The managed browser-preview service lacks the Python interpreter required by the FastAPI application. Browser visual/responsive/interaction QA was therefore not completed. The API test client is not a substitute for those checks.
 
-Docker Compose orchestration has not been executed in this environment because Docker is unavailable. The real Kafka transport test passed using an official Apache Kafka 4.0.2 binary distribution and Java 17. The distribution SHA-512 checksum was verified before execution. Broker, topic creation, producer and scoring consumer ran in one test process tree; an event was durably scored through the actual Kafka transport. This verifies transport, not Docker orchestration.
+The [GitHub Actions validation run](https://github.com/zohaibjan/predictive-maintenance-lab/actions/runs/41017185745) passed Docker Compose startup of the Kafka broker/topic initializer and the real Kafka integration test. The complete application-container stack (train/API/producer/consumer images together) has not been exercised. The real Kafka transport test passed using an official Apache Kafka 4.0.2 binary distribution and Java 17. The distribution SHA-512 checksum was verified before execution. Broker, topic creation, producer and scoring consumer ran in one test process tree; an event was durably scored through the actual Kafka transport. This verifies transport, not Docker orchestration.
 
-No hardware, real sensor data, real maintenance records or operational savings have been validated. No CI results are claimed before publication.
+No hardware, real sensor data, real maintenance records or operational savings have been validated. CI evidence is linked above; it covers the published code and its Docker-based broker integration.
 
 
 The recorded run emitted two third-party deprecation warnings from Starlette/httpx and SQLAlchemy/MLflow. No test failures remained.
