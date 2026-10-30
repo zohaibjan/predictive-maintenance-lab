@@ -14,7 +14,8 @@ CASES=[('chromium',1440,1000),('firefox',1440,1000),('webkit',1440,1000),
 def test_live_dashboard(engine,width,height):
     with pw.sync_playwright() as playwright:
         browser=getattr(playwright,engine).launch()
-        context=browser.new_context(viewport={'width':width,'height':height},
+        context=browser.new_context(base_url=os.getenv('DASHBOARD_URL','http://127.0.0.1:8000'),
+                                   viewport={'width':width,'height':height},
                                    is_mobile=width<600,has_touch=width<600)
         page=context.new_page()
         errors=[]
@@ -59,3 +60,4 @@ def test_live_dashboard(engine,width,height):
             raise
         finally:
             context.close();browser.close()
+
