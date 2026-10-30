@@ -1,5 +1,6 @@
 """Verify actual container-produced telemetry through the deployed FastAPI service."""
 import json
+from pathlib import Path
 import time
 from urllib.request import urlopen
 from maintenance.data import generate
@@ -31,6 +32,8 @@ def main():
         history=read('/api/assets/'+asset['asset_id']+'/history')
         assert history and history[-1]['event_id']==asset['event_id']
         assert len({h['event_id'] for h in history})==len(history)
+    # The training container has been removed; its logged model must still exist.
+    assert list(Path('runtime/mlartifacts').rglob('model.joblib')), 'MLflow artifact did not persist'
     metrics=read('/api/metrics')
     assert metrics['synthetic'] and len(metrics['models'])==2
     print(f'Full Docker stack verified: {expected} events, 12 assets, real producer → Kafka → consumer → FastAPI')

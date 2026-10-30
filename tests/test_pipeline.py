@@ -82,6 +82,10 @@ def test_metrics_and_mlflow(trained):
         assert 0<=model['test']['f1']<=1
         assert sum(map(sum,model['test']['confusion_matrix']))==report['splits']['test']['rows']
     assert (root/'model.joblib').exists()
+    assert len(list((root/'mlartifacts').rglob('model.joblib')))==1
+    selected_run=next(run for run in runs if run.data.tags.get('selected_by')=='validation_f1')
+    restored=client.download_artifacts(selected_run.info.run_id,'model.joblib')
+    assert Path(restored).is_file()
 
 def test_api_dashboard_and_validation(scorer,trained,monkeypatch):
     from maintenance.api import app,service

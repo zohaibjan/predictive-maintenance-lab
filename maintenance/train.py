@@ -74,7 +74,16 @@ def train(output=Path('runtime'), seed=42, tracking_uri=None):
     if tracking_uri:
         import mlflow
         mlflow.set_tracking_uri(tracking_uri)
-        mlflow.set_experiment('synthetic-predictive-maintenance')
+        # New experiments keep artifacts under the same persistent output volume.
+        experiment_name = 'synthetic-predictive-maintenance'
+        client = mlflow.MlflowClient()
+        experiment = client.get_experiment_by_name(experiment_name)
+        if experiment is None:
+            experiment_id = client.create_experiment(
+                experiment_name, artifact_location=(output/'mlartifacts').resolve().as_uri())
+        else:
+            experiment_id = experiment.experiment_id
+        mlflow.set_experiment(experiment_id=experiment_id)
         for name in models:
             with mlflow.start_run(run_name=name):
                 mlflow.log_params({'model':name,'seed':seed,'synthetic':True,'horizon_hours':12,
